@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contador de Namoro</title>
+    <title>Nosso Tempo Juntos ❤️</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -25,32 +25,68 @@
             font-size: 2rem;
             margin-top: 20px;
         }
+        #botao-iniciar {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: white;
+            background-color: #ff69b4;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #botao-iniciar:hover {
+            background-color: #ff85c1;
+        }
     </style>
 </head>
 <body>
     <h1>Nosso Tempo Juntos ❤️</h1>
-    <div id="contador">Carregando...</div>
+    <div id="contador">Clique no botão para começar!</div>
+    <button id="botao-iniciar">Começar Contador</button>
 
     <script>
-        // Data inicial do pedido (substitua pela data do momento especial)
-        const dataInicial = new Date("2023-12-09T18:00:00"); // Exemplo: 9 de dezembro de 2023, 18:00
+        const contador = document.getElementById("contador");
+        const botaoIniciar = document.getElementById("botao-iniciar");
 
-        function atualizarContador() {
-            const agora = new Date();
-            const diff = agora - dataInicial;
+        // Checa se já existe uma data de início no localStorage
+        let dataInicial = localStorage.getItem("dataInicial");
 
-            const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const horas = Math.floor((diff / (1000 * 60 * 60)) % 24);
-            const minutos = Math.floor((diff / (1000 * 60)) % 60);
-            const segundos = Math.floor((diff / 1000) % 60);
-
-            document.getElementById("contador").textContent = 
-                `${dias} dias, ${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+        if (dataInicial) {
+            // Se a data inicial já existe, inicia automaticamente o contador
+            dataInicial = new Date(dataInicial);
+            iniciarContador();
         }
 
-        // Atualiza o contador a cada segundo
-        setInterval(atualizarContador, 1000);
-        atualizarContador();
+        botaoIniciar.addEventListener("click", () => {
+            if (!dataInicial) {
+                // Define a data inicial como o momento atual e salva no localStorage
+                dataInicial = new Date();
+                localStorage.setItem("dataInicial", dataInicial.toISOString());
+                iniciarContador();
+            }
+        });
+
+        function iniciarContador() {
+            botaoIniciar.style.display = "none"; // Esconde o botão após iniciar
+
+            function atualizarContador() {
+                const agora = new Date();
+                const diff = agora - dataInicial;
+
+                const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const horas = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                const minutos = Math.floor((diff / (1000 * 60)) % 60);
+                const segundos = Math.floor((diff / 1000) % 60);
+
+                contador.textContent = 
+                    `${dias} dias, ${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+            }
+
+            // Atualiza o contador a cada segundo
+            setInterval(atualizarContador, 1000);
+            atualizarContador();
+        }
     </script>
 </body>
 </html>
