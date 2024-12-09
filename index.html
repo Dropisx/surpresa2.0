@@ -62,7 +62,6 @@
             appId: "1:1012311520636:web:a2e1269d2e2c03a7fe20f9",
             measurementId: "G-SBJ1KCSYHQ"
          };
-
         // Inicializa o Firebase
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
@@ -76,18 +75,19 @@
 
         let dataInicial;
 
-        // Verifica se já existe uma data no banco de dados antes de começar
+        // Carrega a data inicial do banco de dados
         onValue(dataRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                dataInicial = new Date(data); // Carrega a data se já estiver salva
-                botaoZerar.style.display = "inline-block"; // Exibe o botão para zerar
+                // Se já existe uma data, inicializa o contador
+                dataInicial = new Date(data);
+                botaoZerar.style.display = "inline-block"; // Exibe o botão de zerar
             }
         });
 
         botaoIniciar.addEventListener("click", () => {
             if (!dataInicial) {
-                // Define a data inicial como o momento atual e salva no Firebase
+                // Se não houver data, define a data inicial como o momento atual e salva no Firebase
                 dataInicial = new Date();
                 set(dataRef, dataInicial.toISOString());
                 botaoZerar.style.display = "inline-block"; // Exibe o botão de zerar
