@@ -47,7 +47,7 @@
             margin-bottom: 20px;
         }
 
-        #botao-iniciar {
+        #botao-iniciar, #botao-zerar {
             padding: 15px 30px;
             font-size: 1.2rem;
             color: #fff;
@@ -56,9 +56,10 @@
             border-radius: 10px;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            margin-top: 20px;
         }
 
-        #botao-iniciar:hover {
+        #botao-iniciar:hover, #botao-zerar:hover {
             background-color: #ff85c1;
         }
 
@@ -77,6 +78,7 @@
         <h1>Nosso Tempo Juntos ❤️</h1>
         <div id="contador">Clique no botão para começar!</div>
         <button id="botao-iniciar">Começar Contador</button>
+        <button id="botao-zerar">Zerar Contador</button>
     </div>
 
     <footer>
@@ -97,8 +99,7 @@
             messagingSenderId: "1012311520636",
             appId: "1:1012311520636:web:a2e1269d2e2c03a7fe20f9",
             measurementId: "G-SBJ1KCSYHQ"
-        };
-
+         };
         // Inicializa o Firebase
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
@@ -106,29 +107,39 @@
         const dataRef = ref(database, "contador/dataInicial");
         const contador = document.getElementById("contador");
         const botaoIniciar = document.getElementById("botao-iniciar");
+        const botaoZerar = document.getElementById("botao-zerar");
 
         let dataInicial;
 
-        // Carrega a data inicial do Firebase
+        // Carrega a data inicial do Firebase ao carregar a página
         onValue(dataRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                dataInicial = new Date(data); // Carrega a data salva
-                iniciarContador(); // Inicia o contador ao carregar a página
+                dataInicial = new Date(data); // Carrega a data salva no Firebase
+                iniciarContador(); // Inicia o contador com a data salva
             }
         });
 
-        // Função para iniciar o contador quando o botão é pressionado
+        // Função para iniciar o contador quando o botão for pressionado
         botaoIniciar.addEventListener("click", () => {
             if (!dataInicial) {
+                // Se não há data no Firebase, define a data de início e salva no Firebase
                 dataInicial = new Date();
-                set(dataRef, dataInicial.toISOString()); // Salva a data de início no Firebase
+                set(dataRef, dataInicial.toISOString()); // Salva a data no Firebase
             }
             iniciarContador();
         });
 
+        // Função para zerar o contador
+        botaoZerar.addEventListener("click", () => {
+            dataInicial = new Date(); // Zera a data de início
+            set(dataRef, dataInicial.toISOString()); // Atualiza a data no Firebase
+            iniciarContador(); // Reinicia o contador
+        });
+
         function iniciarContador() {
-            botaoIniciar.style.display = "none"; // Esconde o botão
+            botaoIniciar.style.display = "none"; // Esconde o botão após iniciar
+            botaoZerar.style.display = "inline-block"; // Exibe o botão de zerar após iniciar
 
             function atualizarContador() {
                 const agora = new Date();
@@ -142,8 +153,8 @@
                 contador.textContent = `${dias} dias, ${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
             }
 
-            setInterval(atualizarContador, 1000); // Atualiza a cada segundo
-            atualizarContador(); // Atualiza imediatamente ao iniciar
+            setInterval(atualizarContador, 1000); // Atualiza o contador a cada segundo
+            atualizarContador(); // Atualiza o contador imediatamente ao iniciar
         }
     </script>
 </body>
