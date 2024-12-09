@@ -74,7 +74,14 @@
 
         let dataInicial;
 
-        // Espera o clique do botão para começar
+        // Carrega a data do banco de dados, mas não inicia o contador
+        onValue(dataRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                dataInicial = new Date(data); // Carrega a data se já estiver salva no Firebase
+            }
+        });
+
         botaoIniciar.addEventListener("click", () => {
             if (!dataInicial) {
                 // Define a data inicial como o momento atual e salva no Firebase
