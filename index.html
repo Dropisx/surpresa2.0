@@ -1,56 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nosso Tempo Juntos ❤️</title>
     <style>
+        /* Estilos gerais para a página */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Dancing Script', cursive, sans-serif; /* Fonte cursiva */
+            background-color: #f7e8e8; /* Cor suave de fundo, como papel antigo */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background-color: #f0f8ff;
             color: #333;
         }
+
         h1 {
-            margin: 0;
-            font-size: 2rem;
-            color: #ff69b4;
+            font-size: 3rem;
+            color: #ff69b4; /* Cor rosa suave */
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 5px rgba(255, 105, 180, 0.5); /* Efeito de sombra suave */
         }
+
+        /* Estilo do "cartão" */
+        .carta {
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Sombra suave para dar o efeito de carta */
+            padding: 30px;
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+            font-size: 1.5rem;
+            border: 2px solid #ff69b4;
+            background-image: linear-gradient(45deg, rgba(255, 105, 180, 0.2), rgba(255, 182, 193, 0.1)); /* Fundo suave */
+        }
+
+        /* Estilo do contador */
         #contador {
             font-size: 2rem;
+            color: #ff69b4;
             margin-top: 20px;
+            font-weight: bold;
+            padding: 10px 0;
+            border-top: 2px solid #ff69b4;
+            margin-bottom: 20px;
         }
+
+        /* Estilo do botão */
         #botao-iniciar {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 1rem;
-            color: white;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            color: #fff;
             background-color: #ff69b4;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
+
         #botao-iniciar:hover {
             background-color: #ff85c1;
         }
+
+        /* Estilo de rodapé ou assinatura */
+        footer {
+            position: absolute;
+            bottom: 20px;
+            color: #555;
+            font-size: 1rem;
+            font-family: 'Dancing Script', cursive;
+        }
+
     </style>
+    <!-- Importando a fonte Dancing Script do Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Nosso Tempo Juntos ❤️</h1>
-    <div id="contador">Clique no botão para começar!</div>
-    <button id="botao-iniciar">Começar Contador</button>
+    <div class="carta">
+        <h1>Nosso Tempo Juntos ❤️</h1>
+        <div id="contador">Clique no botão para começar!</div>
+        <button id="botao-iniciar">Começar Contador</button>
+    </div>
+
+    <footer>
+        <p>Feito com amor 💖</p>
+    </footer>
 
     <script type="module">
         // Importa o Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
         import { getDatabase, ref, set, remove, onValue } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js";
 
-        // Configuração do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBF2nPyRZNWppIWdjCG8KCxe2UgUeLxR78",
             authDomain: "surpresa-bda19.firebaseapp.com",
@@ -74,37 +118,32 @@
 
         let dataInicial;
 
-        // Carrega a data inicial do banco de dados
         onValue(dataRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                // Se já existe uma data, inicializa o contador
                 dataInicial = new Date(data);
             } else {
-                // Se não existe, reseta o contador
                 zerarContador();
             }
         });
 
         // Função para zerar o contador
         function zerarContador() {
-            // Remove a data do Firebase e reseta o contador
             remove(dataRef);
-            dataInicial = null; // Reseta a data
-            contador.textContent = "Clique no botão para começar!"; // Reseta o texto do contador
+            dataInicial = null;
+            contador.textContent = "Clique no botão para começar!";
         }
 
         botaoIniciar.addEventListener("click", () => {
             if (!dataInicial) {
-                // Se não houver data, define a data inicial como o momento atual e salva no Firebase
                 dataInicial = new Date();
                 set(dataRef, dataInicial.toISOString());
             }
-            iniciarContador(); // Inicia o contador quando o botão é clicado
+            iniciarContador();
         });
 
         function iniciarContador() {
-            botaoIniciar.style.display = "none"; // Esconde o botão após iniciar
+            botaoIniciar.style.display = "none";
 
             function atualizarContador() {
                 const agora = new Date();
@@ -115,16 +154,13 @@
                 const minutos = Math.floor((diff / (1000 * 60)) % 60);
                 const segundos = Math.floor((diff / 1000) % 60);
 
-                contador.textContent = 
-                    `${dias} dias, ${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+                contador.textContent = `${dias} dias, ${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
             }
 
-            // Atualiza o contador a cada segundo
             setInterval(atualizarContador, 1000);
             atualizarContador();
         }
 
-        // Aqui, a função zerarContador será chamada automaticamente se a página for carregada sem uma data inicial no Firebase
         zerarContador();
     </script>
 </body>
