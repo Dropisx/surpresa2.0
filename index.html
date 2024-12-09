@@ -25,7 +25,7 @@
             font-size: 2rem;
             margin-top: 20px;
         }
-        #botao-iniciar, #botao-zerar {
+        #botao-iniciar {
             margin-top: 20px;
             padding: 10px 20px;
             font-size: 1rem;
@@ -35,7 +35,7 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        #botao-iniciar:hover, #botao-zerar:hover {
+        #botao-iniciar:hover {
             background-color: #ff85c1;
         }
     </style>
@@ -44,7 +44,6 @@
     <h1>Nosso Tempo Juntos ❤️</h1>
     <div id="contador">Clique no botão para começar!</div>
     <button id="botao-iniciar">Começar Contador</button>
-    <button id="botao-zerar" style="display: none;">Zerar Contador</button>
 
     <script type="module">
         // Importa o Firebase
@@ -62,6 +61,7 @@
             appId: "1:1012311520636:web:a2e1269d2e2c03a7fe20f9",
             measurementId: "G-SBJ1KCSYHQ"
          };
+
         // Inicializa o Firebase
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
@@ -71,7 +71,6 @@
 
         const contador = document.getElementById("contador");
         const botaoIniciar = document.getElementById("botao-iniciar");
-        const botaoZerar = document.getElementById("botao-zerar");
 
         let dataInicial;
 
@@ -81,27 +80,27 @@
             if (data) {
                 // Se já existe uma data, inicializa o contador
                 dataInicial = new Date(data);
-                botaoZerar.style.display = "inline-block"; // Exibe o botão de zerar
+            } else {
+                // Se não existe, reseta o contador
+                zerarContador();
             }
         });
+
+        // Função para zerar o contador
+        function zerarContador() {
+            // Remove a data do Firebase e reseta o contador
+            remove(dataRef);
+            dataInicial = null; // Reseta a data
+            contador.textContent = "Clique no botão para começar!"; // Reseta o texto do contador
+        }
 
         botaoIniciar.addEventListener("click", () => {
             if (!dataInicial) {
                 // Se não houver data, define a data inicial como o momento atual e salva no Firebase
                 dataInicial = new Date();
                 set(dataRef, dataInicial.toISOString());
-                botaoZerar.style.display = "inline-block"; // Exibe o botão de zerar
             }
             iniciarContador(); // Inicia o contador quando o botão é clicado
-        });
-
-        botaoZerar.addEventListener("click", () => {
-            // Remove a data do Firebase e reinicia o contador
-            remove(dataRef);
-            dataInicial = null; // Reseta a data
-            contador.textContent = "Clique no botão para começar!"; // Reseta o texto do contador
-            botaoZerar.style.display = "none"; // Esconde o botão de zerar
-            botaoIniciar.style.display = "inline-block"; // Exibe novamente o botão de iniciar
         });
 
         function iniciarContador() {
@@ -124,6 +123,9 @@
             setInterval(atualizarContador, 1000);
             atualizarContador();
         }
+
+        // Aqui, a função zerarContador será chamada automaticamente se a página for carregada sem uma data inicial no Firebase
+        zerarContador();
     </script>
 </body>
 </html>
