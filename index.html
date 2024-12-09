@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nosso Tempo Juntos ❤️</title>
     <style>
-        /* Estilos gerais para a página */
         body {
-            font-family: 'Dancing Script', cursive, sans-serif; /* Fonte cursiva */
-            background-color: #f7e8e8; /* Cor suave de fundo, como papel antigo */
+            font-family: 'Dancing Script', cursive, sans-serif;
+            background-color: #f7e8e8;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -20,26 +19,24 @@
 
         h1 {
             font-size: 3rem;
-            color: #ff69b4; /* Cor rosa suave */
+            color: #ff69b4;
             margin-bottom: 20px;
-            text-shadow: 2px 2px 5px rgba(255, 105, 180, 0.5); /* Efeito de sombra suave */
+            text-shadow: 2px 2px 5px rgba(255, 105, 180, 0.5);
         }
 
-        /* Estilo do "cartão" */
         .carta {
             background-color: #fff;
             border-radius: 15px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Sombra suave para dar o efeito de carta */
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             padding: 30px;
             width: 80%;
             max-width: 600px;
             text-align: center;
             font-size: 1.5rem;
             border: 2px solid #ff69b4;
-            background-image: linear-gradient(45deg, rgba(255, 105, 180, 0.2), rgba(255, 182, 193, 0.1)); /* Fundo suave */
+            background-image: linear-gradient(45deg, rgba(255, 105, 180, 0.2), rgba(255, 182, 193, 0.1));
         }
 
-        /* Estilo do contador */
         #contador {
             font-size: 2rem;
             color: #ff69b4;
@@ -50,7 +47,6 @@
             margin-bottom: 20px;
         }
 
-        /* Estilo do botão */
         #botao-iniciar {
             padding: 15px 30px;
             font-size: 1.2rem;
@@ -66,7 +62,6 @@
             background-color: #ff85c1;
         }
 
-        /* Estilo de rodapé ou assinatura */
         footer {
             position: absolute;
             bottom: 20px;
@@ -74,9 +69,7 @@
             font-size: 1rem;
             font-family: 'Dancing Script', cursive;
         }
-
     </style>
-    <!-- Importando a fonte Dancing Script do Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -91,9 +84,9 @@
     </footer>
 
     <script type="module">
-        // Importa o Firebase
+        // Importando as funções necessárias do Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
-        import { getDatabase, ref, set, remove, onValue } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBF2nPyRZNWppIWdjCG8KCxe2UgUeLxR78",
@@ -104,46 +97,38 @@
             messagingSenderId: "1012311520636",
             appId: "1:1012311520636:web:a2e1269d2e2c03a7fe20f9",
             measurementId: "G-SBJ1KCSYHQ"
-         };
+        };
 
         // Inicializa o Firebase
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
 
-        // Referência ao nó do banco de dados
         const dataRef = ref(database, "contador/dataInicial");
-
         const contador = document.getElementById("contador");
         const botaoIniciar = document.getElementById("botao-iniciar");
 
         let dataInicial;
 
+        // Carrega a data inicial do Firebase
         onValue(dataRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                dataInicial = new Date(data);
-            } else {
-                zerarContador();
+                dataInicial = new Date(data); // Carrega a data salva
+                iniciarContador(); // Inicia o contador ao carregar a página
             }
         });
 
-        // Função para zerar o contador
-        function zerarContador() {
-            remove(dataRef);
-            dataInicial = null;
-            contador.textContent = "Clique no botão para começar!";
-        }
-
+        // Função para iniciar o contador quando o botão é pressionado
         botaoIniciar.addEventListener("click", () => {
             if (!dataInicial) {
                 dataInicial = new Date();
-                set(dataRef, dataInicial.toISOString());
+                set(dataRef, dataInicial.toISOString()); // Salva a data de início no Firebase
             }
             iniciarContador();
         });
 
         function iniciarContador() {
-            botaoIniciar.style.display = "none";
+            botaoIniciar.style.display = "none"; // Esconde o botão
 
             function atualizarContador() {
                 const agora = new Date();
@@ -157,11 +142,9 @@
                 contador.textContent = `${dias} dias, ${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
             }
 
-            setInterval(atualizarContador, 1000);
-            atualizarContador();
+            setInterval(atualizarContador, 1000); // Atualiza a cada segundo
+            atualizarContador(); // Atualiza imediatamente ao iniciar
         }
-
-        zerarContador();
     </script>
 </body>
 </html>
