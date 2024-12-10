@@ -12,7 +12,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             color: #333;
         }
@@ -63,12 +63,46 @@
             background-color: #ff85c1;
         }
 
+        .galeria {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .galeria h2 {
+            color: #ff69b4;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .fotos {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .foto {
+            width: 150px;
+            height: 150px;
+            border-radius: 10px;
+            object-fit: cover;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .foto:hover {
+            transform: scale(1.1);
+            box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.2);
+        }
+
         footer {
-            position: absolute;
+            position: relative;
             bottom: 20px;
             color: #555;
             font-size: 1rem;
             font-family: 'Dancing Script', cursive;
+            margin-top: 40px;
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500&display=swap" rel="stylesheet">
@@ -78,7 +112,16 @@
         <h1>Nosso Tempo Juntos ❤️</h1>
         <div id="contador">Clique no botão para começar!</div>
         <button id="botao-iniciar">Começar Contador</button>
-        <button id="botao-zerar">Zerar Contador</button>
+        <button id="botao-zerar" style="display: none;">Zerar Contador</button>
+    </div>
+
+    <div class="galeria">
+        <h2>Momentos Especiais 📸</h2>
+        <div class="fotos">
+            <img src="https://cdn.discordapp.com/attachments/1315389609923838096/1315834016116772955/image.png?ex=6758d96c&is=675787ec&hm=ea19376f5db0745e209af3f97356729d2ff347631684651220a2e22417de7bde&" alt="Momento 1" class="foto">
+            <img src="imagem2.jpg" alt="Momento 2" class="foto">
+            <img src="imagem3.jpg" alt="Momento 3" class="foto">
+        </div>
     </div>
 
     <footer>
@@ -95,12 +138,12 @@
             authDomain: "surpresa-bda19.firebaseapp.com",
             databaseURL: "https://surpresa-bda19-default-rtdb.firebaseio.com",
             projectId: "surpresa-bda19",
-            storageBucket: "surpresa-bda19.firebasestorage.app",
+            storageBucket: "surpresa-bda19.appspot.com",
             messagingSenderId: "1012311520636",
             appId: "1:1012311520636:web:a2e1269d2e2c03a7fe20f9",
             measurementId: "G-SBJ1KCSYHQ"
-         };
-        // Inicializa o Firebase
+        };
+
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
 
@@ -111,35 +154,31 @@
 
         let dataInicial;
 
-        // Carrega a data inicial do Firebase ao carregar a página
         onValue(dataRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                dataInicial = new Date(data); // Carrega a data salva no Firebase
-                iniciarContador(); // Inicia o contador com a data salva
+                dataInicial = new Date(data);
+                iniciarContador();
             }
         });
 
-        // Função para iniciar o contador quando o botão for pressionado
         botaoIniciar.addEventListener("click", () => {
             if (!dataInicial) {
-                // Se não há data no Firebase, define a data de início e salva no Firebase
                 dataInicial = new Date();
-                set(dataRef, dataInicial.toISOString()); // Salva a data no Firebase
+                set(dataRef, dataInicial.toISOString());
             }
             iniciarContador();
         });
 
-        // Função para zerar o contador
         botaoZerar.addEventListener("click", () => {
-            dataInicial = new Date(); // Zera a data de início
-            set(dataRef, dataInicial.toISOString()); // Atualiza a data no Firebase
-            iniciarContador(); // Reinicia o contador
+            dataInicial = new Date();
+            set(dataRef, dataInicial.toISOString());
+            iniciarContador();
         });
 
         function iniciarContador() {
-            botaoIniciar.style.display = "none"; // Esconde o botão após iniciar
-            botaoZerar.style.display = "inline-block"; // Exibe o botão de zerar após iniciar
+            botaoIniciar.style.display = "none";
+            botaoZerar.style.display = "inline-block";
 
             function atualizarContador() {
                 const agora = new Date();
@@ -153,9 +192,38 @@
                 contador.textContent = `${dias} dias, ${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
             }
 
-            setInterval(atualizarContador, 1000); // Atualiza o contador a cada segundo
-            atualizarContador(); // Atualiza o contador imediatamente ao iniciar
+            setInterval(atualizarContador, 1000);
+            atualizarContador();
         }
+
+        document.querySelectorAll(".foto").forEach((foto) => {
+            foto.addEventListener("click", () => {
+                const modal = document.createElement("div");
+                modal.style.position = "fixed";
+                modal.style.top = 0;
+                modal.style.left = 0;
+                modal.style.width = "100%";
+                modal.style.height = "100%";
+                modal.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+                modal.style.display = "flex";
+                modal.style.alignItems = "center";
+                modal.style.justifyContent = "center";
+                modal.style.zIndex = 1000;
+
+                const imagemAmpliada = document.createElement("img");
+                imagemAmpliada.src = foto.src;
+                imagemAmpliada.style.maxWidth = "90%";
+                imagemAmpliada.style.maxHeight = "90%";
+                imagemAmpliada.style.borderRadius = "10px";
+
+                modal.appendChild(imagemAmpliada);
+                document.body.appendChild(modal);
+
+                modal.addEventListener("click", () => {
+                    document.body.removeChild(modal);
+                });
+            });
+        });
     </script>
 </body>
 </html>
